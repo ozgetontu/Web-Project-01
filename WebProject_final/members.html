@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="members.css">
+    <title>Document</title>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+</head>
+<body>
+   
+    <main>
+        <div class="profile">
+            <header>
+                <img src="./images/defne.jpg" alt="">
+                <div class="info">
+                    <h3>Defne Ersungur</h3>
+                    <p>defne.ersungur@ug.bilkent.edu.tr</p>
+                </div>
+            </header>
+            <div class="members">
+                <h3><img src="./images/star.png" alt="">Project Members</h3><br>
+            </div>
+           
+            <div class="middle" id="middle">
+                <ul id="middle">
+
+                </ul>
+            </div>
+             
+            <footer id="new">
+                <img src="./images/plus.png" alt="">
+                <p>New List</p>
+            </footer>
+        </div>
+        <div id="newtask1" class="newtask">
+            <p>New Task Name</p>
+            <input type="text" id="text1">
+            <input type="button" value="Create" id="first">
+            <input type="button" value="Cancel" id="cancel">
+        </div>
+        <div class="list">
+            <h1><span class="star">&#9733;</span><b> Project Members</b></h1>
+            <div id="profile-container">
+                <div class="profile2">
+                    <img src="./images/defne.jpg" alt="Profile Picture">
+                    <div class="profile2-info">
+                        <h2>Defne Ersungur</h2>
+                        <p>Section:01</p>
+                        <p>22003296</p>
+                    </div> 
+                </div>
+                <div class="profile2">
+
+                    <img src="./images/mirac.jpeg" alt="Profile Picture">
+                    <div class="profile2-info">
+                        <h2>Miraç Uzan</h2>
+                        <p>Section:03</p>
+                        <p>22001888</p>
+                    </div>
+                </div>
+                <div class="profile2">
+                    <img src="./images/onurcan.jpeg" alt="Profile Picture">
+                    <div class="profile2-info">
+                        <h2>Onurcan Genç</h2>
+                        <p>Section:02</p>
+                        <p>22003467</p>
+                    </div>
+                </div>
+                <div class="profile2">
+                    <img src="./images/doga.jpeg" alt="Profile Picture">
+                    <div class="profile2-info">
+                        <h2>Doğa Çekmegül</h2>
+                        <p>Section:02</p>
+                        <p>21803348</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+         $(document).ready(function(){
+    
+    $("#newtask1").css("display", "none");
+
+  
+    $("#new").click(function(){
+     
+        $("#newtask1").css("display", "block");
+
+    });
+
+
+  $("#cancel").click(function(){
+     
+    $("#newtask1").css("display", "none");
+    
+});
+
+
+
+    $("#text1").keypress(function(e) {
+      
+        var inputValue = $(this).val();
+        
+        if(e.which === 13) { // Enter 
+            
+        // add
+        $("#middle").append("<li><div>" + inputValue + "</div></li>");
+
+        // clear inptext
+        $(this).val("");
+      }
+    });
+
+    $("#first").click(function() {
+     
+        var inputValue = $(this).val();
+                  
+        // add
+        $("#middle").append("<li><div>" + inputValue + "</div></li>");
+
+        // clear inptext
+        $("#text1").val("");
+    });
+
+ 
+
+});
+
+    </script>
+
+
+
+
+</body>
+</html>

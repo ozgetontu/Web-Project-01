@@ -1,0 +1,374 @@
+
+
+  <script>
+    $(document).ready(function(){
+    // Sayfa yüklendiğinde localStorage'dan verileri al
+    var taskdata = JSON.parse(localStorage.getItem('taskdata')) || [];
+    var lastLiIndex = parseInt(localStorage.getItem('lastLiIndex')) || 0;
+
+    // Sayfa yüklendiğinde localStorage'dan verileri al
+    taskdata.forEach(function (gorev, index) {
+        var $newLi = $("<li><div>" + gorev + "</div></li>");
+        $("#middle").append($newLi);
+
+        if (index === lastLiIndex) {
+            $newLi.css({
+                'border-left': '5px solid rgb(181, 16, 181)',
+                'margin-left': '-35px'
+            });
+        }
+        
+    });
+
+    // Sayfa yüklendiğinde localStorage'dan gizli durumu al
+    var listGizliDurumu = localStorage.getItem('listGizliDurumu');
+    if (listGizliDurumu === 'gizli') {
+      $("#list").css("display", "none");
+      $("#list1").css("display", "block");
+    } else {
+      $("#list").css("display", "block");
+      $("#list1").css("display", "none");
+    }
+
+    $("#new").click(function(){
+      $("#newtask1").css("display", "block");
+    });
+
+    $("#cancel").click(function(){
+      $("#newtask1").css("display", "none");
+    });
+
+    $("#text1").keypress(function(e) {
+      if(e.which === 13) { // Enter 
+        addtask();
+      }
+    });
+
+    $("#members").click(function(){
+        $("#list").css("display", "block");
+      $("#list1").css("display", "none");
+      var listGizliDurumu = $("#list").css("display") === "none" ? 'gizli' : 'görünür';
+        localStorage.setItem('listGizliDurumu', listGizliDurumu);
+    });
+
+    $("#members").on("click", function(){
+        // Tıklandığında kenarlık ekleyerek stil değiştir
+        $(this).css({
+            'border-left': '5px solid rgb(181, 16, 181)',
+            'margin-left': '1'
+        });
+        $("li").css({
+                     "border-left": "none",
+                     'margin-left': '-30px'
+            });
+    });
+
+    // Belirli bir öğenin dışına tıklandığında kenarlığı eski haline getir
+    $(document).on("click", function(event){
+        if (!$(event.target).closest("#members").length) {
+            $("#members").css({
+                "border-left": "none",
+                'margin-left': '1'
+            });
+        }
+
+        // if (!$(event.target).closest("li").length) {
+        //     $("li").css({
+        //         "border-left": "none",
+        //         'margin-left': '-30px'
+        //     });
+        // }
+    });
+
+    $("#first").click(function() {
+      addtask();
+    });
+
+    function addtask() {
+      var inputValue = $("#text1").val();
+      if (inputValue.trim() !== "") {
+          // add
+          var $newLi = $("<li><div>" + inputValue + "<img src='./images/garbage (1).png'></div></li>");
+          
+          // Tüm h3 ve checkboxları temizle
+        $("#list1 h3").remove();
+        $("#list1 #mid").remove();
+
+        // Oluşturulan li'nin değerini içeren h3 elementini oluştur
+        var $newH3 = $("<h3>" + inputValue + "</h3>");
+        $("#list1").append($newH3);
+
+        // Oluşturulan li ve h3 elementlerini sayfaya ekle
+        $("#middle").append($newLi);
+
+        // Checkbox ve label ekleyen fonksiyon
+        addCheckbox();
+
+        // Güncellenen değeri içeren h3 elementini sayfaya ekle
+        $("#list1").append($newH3);
+          // clear input text
+          $("#text1").val("");
+  
+          // görevleri localStorage'a ekle
+          taskdata.push(inputValue);
+          localStorage.setItem('taskdata', JSON.stringify(taskdata));
+          $("#list").css("display", "none");
+          $("#list1").css("display", "block");
+          $("#newtask1").css("display", "none");
+  
+          // gizli durumu localStorage'a ekle
+          var listGizliDurumu = $("#list").css("display") === "none" ? 'gizli' : 'görünür';
+          localStorage.setItem('listGizliDurumu', listGizliDurumu);
+  
+          // Tüm li'lerden stilini kaldır
+          $("li").css({
+              'border-left': 'none',
+              'margin-left': '-30px'
+          });
+  
+          // En son eklenen li'ye özel stil ekle
+          $newLi.css({
+              'border-left': '5px solid rgb(181, 16, 181)',
+              'margin-left': '-35px'
+          });
+  
+          // En son eklenen li'nin indeksini kaydet
+          lastLiIndex = $newLi.index();
+          localStorage.setItem('lastLiIndex', lastLiIndex);
+      }
+  }
+
+    $("ul").on("click", "li img", function (e) {
+        e.stopPropagation();
+    
+        let $li = $(this).closest("li");
+        let idx = $li.index();
+    
+        taskdata.splice(idx, 1);
+        $li.remove();
+    
+        localStorage.setItem("taskdata", JSON.stringify(taskdata));
+    
+        // Check if the deleted li was the last one
+        if (idx === lastLiIndex) {
+            // Select the previous li
+            lastLiIndex = Math.max(0, lastLiIndex - 1);
+            $("li").eq(lastLiIndex).css({
+                'border-left': '5px solid rgb(181, 16, 181)',
+                'margin-left': '-35px'
+            });
+            localStorage.setItem('lastLiIndex', lastLiIndex);
+        }
+    });
+    $("ul").on("click", "li", function (e) {
+        var $clickedLi = $(this);
+
+        // Tüm li'lerden stilini kaldır
+        $("li").css({
+            'border-left': 'none',
+            'margin-left': '-30px'
+        });
+
+        // Tıklanan li'ye özel stil ekle
+        $clickedLi.css({
+            'border-left': '5px solid rgb(181, 16, 181)',
+            'margin-left': '-35px'
+        });
+
+        // Tıklanan li'nin indeksini kaydet
+        lastLiIndex = $clickedLi.index();
+        localStorage.setItem('lastLiIndex', lastLiIndex);
+    });
+
+   
+    
+    
+    //listelere task
+
+    $(document).ready(function() {
+      loadTasks();
+    });
+  
+    // Text input alanında Enter tuşuna basıldığında yeni görev ekle
+    $('#search').keypress(function(event) {
+      if (event.which === 13) {
+        addCheckbox();
+      }
+    });
+  
+    // Checkbox durumu değiştiğinde localStorage'ı güncelle
+    $(document).on('change', ':checkbox', function() {
+      updateLocalStorage();
+    });
+  
+    // LocalStorage'dan verileri al
+    function loadTasks() {
+      var tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      
+      tasks.forEach(function(task, index) {
+        createTask(task.label, task.checked, index + 1);
+      });
+    }
+  
+    // Yeni bir görev oluştur
+    function createTask(label, isChecked, index) {
+      var checkbox = $('<input type="checkbox" size="10">');
+      var labelElement = $('<label>');
+  
+      checkbox.prop('checked', isChecked);
+      labelElement.text(label);
+  
+      var taskContainer = $('<div class="mid" id=mid></div>');
+      taskContainer.append(checkbox);
+      taskContainer.append(labelElement);
+  
+      $('#list1').append('<br>');
+      $('#list1').append(taskContainer);
+  
+      // Her checkbox ve label'a benzersiz ID'leri ekle
+      checkbox.attr('id', 'chk' + index);
+      labelElement.attr('for', 'chk' + index);
+    }
+  
+    // Checkbox ve label ekleyen fonksiyon
+    function addCheckbox() {
+      var inputValue = $('#search').val();
+  
+      // Boş giriş kontrolü
+      if (inputValue.trim() !== "") {
+        
+      
+  
+      // Yeni görevi oluştur ve sayfaya ekle
+      var tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      var newIndex = tasks.length + 1;
+      createTask(inputValue, false, newIndex);
+  
+      // Text input alanını temizle
+      $('#search').val('');
+  
+      // LocalStorage'ı güncelle
+      updateLocalStorage();
+    }
+  }
+    // LocalStorage'ı güncelle
+    function updateLocalStorage() {
+      var tasks = [];
+  
+      // Checkbox durumlarını ve label'ları LocalStorage'dan al
+      $(':checkbox').each(function(index) {
+        tasks.push({
+          label: $(this).siblings('label').text(),
+          checked: $(this).prop('checked')
+        });
+      });
+  
+      // Verileri LocalStorage'a kaydet
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+  
+    //localStorage.clear();
+
+
+
+
+
+
+
+    function addtask() {
+      var inputValue = $("#text1").val() + "<img src='./images/garbage (1).png' >";
+      if (inputValue.trim() !== "") {
+          // add
+          var $newLi = $("<li><div>" + inputValue +"</div></li>" );
+           $("#list1 h1").remove();
+          $("#middle").append($newLi);
+          var $newH1 = $("<h1>" + $("#text1").val() + "</h1>");
+          $("#list1").append($newH1);
+
+          // clear input text
+          $("#text1").val("");
+
+          // görevleri localStorage'a ekle
+          taskdata.push(inputValue);
+          localStorage.setItem('taskdata', JSON.stringify(taskdata));
+          $("#list").css("display", "none");
+          $("#list1").css("display", "block");
+          $("#newtask1").css("display", "none");
+
+          // gizli durumu localStorage'a ekle
+          var listGizliDurumu = $("#list").css("display") === "none" ? 'gizli' : 'görünür';
+          localStorage.setItem('listGizliDurumu', listGizliDurumu);
+
+          // Tüm li'lerden stilini kaldır
+          $("li").css({
+              'border-left': 'none',
+              'margin-left': '-30px'
+          });
+
+          // En son eklenen li'ye özel stil ekle
+          $newLi.css({
+              'border-left': '5px solid rgb(181, 16, 181)',
+              'margin-left': '-35px'
+          });
+
+          // En son eklenen li'nin indeksini kaydet
+          lastLiIndex = $newLi.index();
+          localStorage.setItem('lastLiIndex', lastLiIndex);
+      }
+  }
+  $("ul").on("click", "li", function (e) {
+      var $clickedLi = $(this);
+
+      // Tüm li'lerden stilini kaldır
+      $("li").css({
+          'border-left': 'none',
+          'margin-left': '-30px'
+      });
+
+      // Tıklanan li'ye özel stil ekle
+      $clickedLi.css({
+          'border-left': '5px solid rgb(181, 16, 181)',
+          'margin-left': '-35px'
+      });
+
+      // Tıklanan li'nin indeksini kaydet
+      lastLiIndex = $clickedLi.index();
+      localStorage.setItem('lastLiIndex', lastLiIndex);
+
+      $("#list1 h1").remove();
+
+     
+      // Tıklanan li'nin içindeki metni al
+      var liText = $(this).find("div").text();
+  
+      // Yeni bir h1 öğesi oluşturarak sayfaya ekle
+      var $newTitle = $("<h1 id='dynamicTitle'>" + liText + "</h1>");
+      $("#list1").prepend($newTitle);
+
+      $(".mid").remove();
+
+    // Tıklanan li'nin içindeki metni al
+    var liText = $(this).find("div").text();
+
+    // Yeni bir mid id'li div oluştur
+    var $newDiv = $("<div class='mid'></div>");
+
+    // Yeni bir checkbox oluştur
+    var $newCheckbox = $('<input type="checkbox" size="10">');
+    $newDiv.append($newCheckbox);
+
+    // Yeni bir label oluştur ve içeriği li'nin metni olsun
+    var $newLabel = $('<label>' + liText + '</label>');
+    $newDiv.append($newLabel);
+
+    // 'list1' içine oluşturulan div'i ekle
+    $("#list1").prepend($newDiv);
+
+      
+  });
+    
+  });
+  </script>
+
+</body>
+</html>

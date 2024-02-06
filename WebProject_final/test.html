@@ -1,0 +1,177 @@
+<script>
+  $(document).ready(function(){
+    // Sayfa yüklendiğinde localStorage'dan verileri al
+    var taskdata = JSON.parse(localStorage.getItem('taskdata')) || [];
+    var lastLiIndex = parseInt(localStorage.getItem('lastLiIndex')) || 0;
+
+    // Sayfa yüklendiğinde localStorage'dan verileri al
+    taskdata.forEach(function (gorev, index) {
+        var $newLi = $("<li><div>" + gorev + "</div></li>");
+        $("#middle").append($newLi);
+
+        if (index === lastLiIndex) {
+            $newLi.css({
+                'border-left': '5px solid rgb(181, 16, 181)',
+                'margin-left': '-35px'
+            });
+        }
+    });
+
+    // Sayfa yüklendiğinde localStorage'dan gizli durumu al
+    var listGizliDurumu = localStorage.getItem('listGizliDurumu');
+    if (listGizliDurumu === 'gizli') {
+      $("#list").css("display", "none");
+      $("#list1").css("display", "block");
+    } else {
+      $("#list").css("display", "block");
+      $("#list1").css("display", "none");
+    }
+
+    $("#new").click(function(){
+      $("#newtask1").css("display", "block");
+    });
+
+    $("#cancel").click(function(){
+      $("#newtask1").css("display", "none");
+    });
+
+    $("#text1").keypress(function(e) {
+      if(e.which === 13) { // Enter 
+        addtask();
+      }
+    });
+
+    $("#members").click(function(){
+        $("#list").css("display", "block");
+      $("#list1").css("display", "none");
+      var listGizliDurumu = $("#list").css("display") === "none" ? 'gizli' : 'görünür';
+        localStorage.setItem('listGizliDurumu', listGizliDurumu);
+    });
+
+    $("#members").on("click", function(){
+        // Tıklandığında kenarlık ekleyerek stil değiştir
+        $(this).css({
+            'border-left': '5px solid rgb(181, 16, 181)',
+            'margin-left': '1'
+        });
+        $("li").css({
+                     "border-left": "none",
+                     'margin-left': '-30px'
+            });
+    });
+
+    // Belirli bir öğenin dışına tıklandığında kenarlığı eski haline getir
+    $(document).on("click", function(event){
+        if (!$(event.target).closest("#members").length) {
+            $("#members").css({
+                "border-left": "none",
+                'margin-left': '1'
+            });
+        }
+
+        // if (!$(event.target).closest("li").length) {
+        //     $("li").css({
+        //         "border-left": "none",
+        //         'margin-left': '-30px'
+        //     });
+        // }
+    });
+
+    $("#first").click(function() {
+      addtask();
+    });
+
+    function addtask() {
+        var inputValue = $("#text1").val() + "<img src='./images/garbage (1).png' >";
+        if (inputValue.trim() !== "") {
+            // add
+            var $newLi = $("<li><div>" + inputValue + "</div></li>");
+            $("#middle").append($newLi);
+
+            // clear input text
+            $("#text1").val("");
+
+            // görevleri localStorage'a ekle
+            taskdata.push(inputValue);
+            localStorage.setItem('taskdata', JSON.stringify(taskdata));
+            $("#list").css("display", "none");
+            $("#list1").css("display", "block");
+            $("#newtask1").css("display", "none");
+
+            // gizli durumu localStorage'a ekle
+            var listGizliDurumu = $("#list").css("display") === "none" ? 'gizli' : 'görünür';
+            localStorage.setItem('listGizliDurumu', listGizliDurumu);
+
+            // Tüm li'lerden stilini kaldır
+            $("li").css({
+                'border-left': 'none',
+                'margin-left': '-30px'
+            });
+
+            // En son eklenen li'ye özel stil ekle
+            $newLi.css({
+                'border-left': '5px solid rgb(181, 16, 181)',
+                'margin-left': '-35px'
+            });
+
+            // En son eklenen li'nin indeksini kaydet
+            lastLiIndex = $newLi.index();
+            localStorage.setItem('lastLiIndex', lastLiIndex);
+        }
+    }
+    $("ul").on("click", "li", function (e) {
+        var $clickedLi = $(this);
+
+        // Tüm li'lerden stilini kaldır
+        $("li").css({
+            'border-left': 'none',
+            'margin-left': '-30px'
+        });
+
+        // Tıklanan li'ye özel stil ekle
+        $clickedLi.css({
+            'border-left': '5px solid rgb(181, 16, 181)',
+            'margin-left': '-35px'
+        });
+
+        // Tıklanan li'nin indeksini kaydet
+        lastLiIndex = $clickedLi.index();
+        localStorage.setItem('lastLiIndex', lastLiIndex);
+    });
+
+    $("ul").on("click", "li img", function (e) {
+        e.stopPropagation();
+
+        let $li = $(this).closest("li");
+        let idx = $li.index();
+
+        // Silinen li'den önceki li'ye stil ekle
+        var $prevLi = $li.prev("li");
+        if ($prevLi.length > 0) {
+            $prevLi.css({
+                'border-left': '5px solid rgb(181, 16, 181)',
+                'margin-left': '-35px'
+            });
+
+            // Tıklanan li'nin indeksini kaydet
+            lastLiIndex = $prevLi.index();
+        } else {
+            // Eğer silinen li ilk sıradaysa, stil eklenmez ve lastLiIndex 0 olarak kalır
+            lastLiIndex = 0;
+        }
+
+        taskdata.splice(idx, 1);
+        $li.remove();
+
+        localStorage.setItem("taskdata", JSON.stringify(taskdata));
+        localStorage.setItem('lastLiIndex', lastLiIndex);
+    });
+
+    //listelere task
+
+
+
+
+
+  });
+</script>
